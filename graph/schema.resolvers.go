@@ -8,9 +8,9 @@ import (
 	"fmt"
 	"log"
 
-	database "github.com/AnjaneyuluBatta505/gin-graphql-postgres/db"
-	"github.com/AnjaneyuluBatta505/gin-graphql-postgres/graph/generated"
-	"github.com/AnjaneyuluBatta505/gin-graphql-postgres/graph/model"
+	database "github.com/amaraad/goapp/db"
+	"github.com/amaraad/goapp/graph/generated"
+	"github.com/amaraad/goapp/graph/model"
 )
 
 func (r *mutationResolver) CreateQuestion(ctx context.Context, input model.QuestionInput) (*model.Question, error) {

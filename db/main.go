@@ -3,7 +3,7 @@ package database
 import (
 	"fmt"
 
-	"github.com/AnjaneyuluBatta505/gin-graphql-postgres/graph/model"
+	"github.com/amaraad/goapp/graph/model"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/postgres"
 )

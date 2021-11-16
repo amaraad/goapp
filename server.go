@@ -3,9 +3,11 @@ package main
 import (
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/playground"
-	"github.com/AnjaneyuluBatta505/gin-graphql-postgres/graph"
-	"github.com/AnjaneyuluBatta505/gin-graphql-postgres/graph/generated"
+	"github.com/amaraad/goapp/graph"
+	"github.com/amaraad/goapp/graph/generated"
 	"github.com/gin-gonic/gin"
+	"github.com/amaraad/goapp/db"
+	"log"
 )
 
 const defaultPort = ":8080"
@@ -31,6 +33,11 @@ func playgroundHandler() gin.HandlerFunc {
 }
 
 func main() {
+	db, err := database.GetDatabase()
+	if err != nil {
+		log.Println("Unable to connect to database", err)
+	}
+	database.RunMigrations(db)
 	r := gin.Default()
 	r.POST("/query", graphqlHandler())
 	r.GET("/", playgroundHandler())

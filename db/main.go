@@ -2,10 +2,11 @@ package database
 
 import (
 	"fmt"
-
+	"gorm.io/driver/postgres"
 	"github.com/amaraad/goapp/graph/model"
-	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/postgres"
+	_ "gorm.io/driver/postgres"
+	"gorm.io/gorm"
 )
 
 type dbConfig struct {
@@ -26,16 +27,11 @@ func getDatabaseUrl() string {
 }
 
 func GetDatabase() (*gorm.DB, error) {
-	db, err := gorm.Open("postgres", getDatabaseUrl())
+	db, err := gorm.Open(postgres.Open(getDatabaseUrl()), &gorm.Config{})
 	return db, err
 }
 
 func RunMigrations(db *gorm.DB) {
-	if !db.HasTable(&model.Question{}) {
-		db.CreateTable(&model.Question{})
-	}
-	if !db.HasTable(&model.Choice{}) {
-		db.CreateTable(&model.Choice{})
-		db.Model(&model.Choice{}).AddForeignKey("question_id", "questions(id)", "CASCADE", "CASCADE")
-	}
+	db.AutoMigrate(&model.Choice{})
+	db.AutoMigrate(&model.Question{})
 }

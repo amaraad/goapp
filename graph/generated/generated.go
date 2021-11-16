@@ -251,16 +251,16 @@ func (ec *executionContext) introspectType(name string) (*introspection.Type, er
 
 var sources = []*ast.Source{
 	{Name: "graph/schema.graphqls", Input: `type Question{
-  id: String!
+  id: ID!
   question_text: String!
   pub_date: String!
   choices: [Choice]
 }
 
 type Choice{
-  id: String!
+  id: ID!
   question: Question!
-  question_id: String!
+  question_id: ID!
   choice_text: String!
 }
 
@@ -275,7 +275,7 @@ input QuestionInput {
 }
 
 input ChoiceInput {
-  question_id: String!
+  question_id: ID!
   choice_text: String!
 }
 
@@ -403,9 +403,9 @@ func (ec *executionContext) _Choice_id(ctx context.Context, field graphql.Collec
 		}
 		return graphql.Null
 	}
-	res := resTmp.(string)
+	res := resTmp.(int)
 	fc.Result = res
-	return ec.marshalNString2string(ctx, field.Selections, res)
+	return ec.marshalNID2int(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Choice_question(ctx context.Context, field graphql.CollectedField, obj *model.Choice) (ret graphql.Marshaler) {
@@ -473,9 +473,9 @@ func (ec *executionContext) _Choice_question_id(ctx context.Context, field graph
 		}
 		return graphql.Null
 	}
-	res := resTmp.(string)
+	res := resTmp.(int)
 	fc.Result = res
-	return ec.marshalNString2string(ctx, field.Selections, res)
+	return ec.marshalNID2int(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Choice_choice_text(ctx context.Context, field graphql.CollectedField, obj *model.Choice) (ret graphql.Marshaler) {
@@ -768,9 +768,9 @@ func (ec *executionContext) _Question_id(ctx context.Context, field graphql.Coll
 		}
 		return graphql.Null
 	}
-	res := resTmp.(string)
+	res := resTmp.(int)
 	fc.Result = res
-	return ec.marshalNString2string(ctx, field.Selections, res)
+	return ec.marshalNID2int(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Question_question_text(ctx context.Context, field graphql.CollectedField, obj *model.Question) (ret graphql.Marshaler) {
@@ -2010,7 +2010,7 @@ func (ec *executionContext) unmarshalInputChoiceInput(ctx context.Context, obj i
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("question_id"))
-			it.QuestionID, err = ec.unmarshalNString2string(ctx, v)
+			it.QuestionID, err = ec.unmarshalNID2int(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -2557,6 +2557,21 @@ func (ec *executionContext) marshalNChoice2ᚖgithubᚗcomᚋamaraadᚋgoappᚋg
 		return graphql.Null
 	}
 	return ec._Choice(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalNID2int(ctx context.Context, v interface{}) (int, error) {
+	res, err := graphql.UnmarshalIntID(v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNID2int(ctx context.Context, sel ast.SelectionSet, v int) graphql.Marshaler {
+	res := graphql.MarshalIntID(v)
+	if res == graphql.Null {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+	}
+	return res
 }
 
 func (ec *executionContext) marshalNQuestion2githubᚗcomᚋamaraadᚋgoappᚋgraphᚋmodelᚐQuestion(ctx context.Context, sel ast.SelectionSet, v model.Question) graphql.Marshaler {

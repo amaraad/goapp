@@ -3,19 +3,19 @@
 package model
 
 type Choice struct {
-	ID         string    `json:"id"`
+	ID         int       `json:"id"`
 	Question   *Question `json:"question"`
-	QuestionID string    `json:"question_id"`
+	QuestionID int       `json:"question_id"`
 	ChoiceText string    `json:"choice_text"`
 }
 
 type ChoiceInput struct {
-	QuestionID string `json:"question_id"`
+	QuestionID int    `json:"question_id"`
 	ChoiceText string `json:"choice_text"`
 }
 
 type Question struct {
-	ID           string    `json:"id"`
+	ID           int       `json:"id"`
 	QuestionText string    `json:"question_text"`
 	PubDate      string    `json:"pub_date"`
 	Choices      []*Choice `json:"choices"`

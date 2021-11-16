@@ -7,6 +7,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"os"
 
 	database "github.com/amaraad/goapp/db"
 	"github.com/amaraad/goapp/graph/generated"
@@ -14,12 +15,13 @@ import (
 )
 
 func (r *mutationResolver) CreateQuestion(ctx context.Context, input model.QuestionInput) (*model.Question, error) {
+	fmt.Fprintf(os.Stderr, "your message here")
 	db, err := database.GetDatabase()
 	if err != nil {
 		log.Println("Unable to connect to database", err)
 		return nil, err
 	}
-	defer db.Close()
+	//defer db.Close()
 	fmt.Println("input", input.QuestionText, input.PubDate)
 	question := model.Question{}
 	question.QuestionText = input.QuestionText
@@ -34,7 +36,7 @@ func (r *mutationResolver) CreateChoice(ctx context.Context, input *model.Choice
 		log.Println("Unable to connect to database", err)
 		return nil, err
 	}
-	defer db.Close()
+	//defer db.Close()
 	choice := model.Choice{}
 	question := model.Question{}
 	choice.QuestionID = input.QuestionID
@@ -51,7 +53,7 @@ func (r *queryResolver) Questions(ctx context.Context) ([]*model.Question, error
 		log.Println("Unable to connect to database", err)
 		return nil, err
 	}
-	defer db.Close()
+	//defer db.Close()
 	db.Find(&r.questions)
 	for _, question := range r.questions {
 		var choices []*model.Choice
@@ -67,7 +69,7 @@ func (r *queryResolver) Choices(ctx context.Context) ([]*model.Choice, error) {
 		log.Println("Unable to connect to database", err)
 		return nil, err
 	}
-	defer db.Close()
+	//defer db.Close()
 	db.Find(&r.choices)
 	return r.choices, nil
 }

@@ -1,14 +1,14 @@
 type Question{
-  id: String!
+  id: ID!
   question_text: String!
   pub_date: String!
   choices: [Choice]
 }
 
 type Choice{
-  id: String!
+  id: ID!
   question: Question!
-  question_id: String!
+  question_id: ID!
   choice_text: String!
 }
 
@@ -23,7 +23,7 @@ input QuestionInput {
 }
 
 input ChoiceInput {
-  question_id: String!
+  question_id: ID!
   choice_text: String!
 }
 

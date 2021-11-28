@@ -53,6 +53,10 @@ type ComplexityRoot struct {
 	Mutation struct {
 		CreateChoice   func(childComplexity int, input *model.ChoiceInput) int
 		CreateQuestion func(childComplexity int, input model.QuestionInput) int
+		DeleteChoice   func(childComplexity int, input int) int
+		DeleteQuestion func(childComplexity int, input int) int
+		UpdateChoice   func(childComplexity int, input model.ChoiceUpdateInput) int
+		UpdateQuestion func(childComplexity int, input model.QuestionUpdateInput) int
 	}
 
 	Query struct {
@@ -70,7 +74,11 @@ type ComplexityRoot struct {
 
 type MutationResolver interface {
 	CreateQuestion(ctx context.Context, input model.QuestionInput) (*model.Question, error)
+	UpdateQuestion(ctx context.Context, input model.QuestionUpdateInput) (*model.Question, error)
+	DeleteQuestion(ctx context.Context, input int) (string, error)
 	CreateChoice(ctx context.Context, input *model.ChoiceInput) (*model.Choice, error)
+	UpdateChoice(ctx context.Context, input model.ChoiceUpdateInput) (*model.Choice, error)
+	DeleteChoice(ctx context.Context, input int) (string, error)
 }
 type QueryResolver interface {
 	Questions(ctx context.Context) ([]*model.Question, error)
@@ -143,6 +151,54 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Mutation.CreateQuestion(childComplexity, args["input"].(model.QuestionInput)), true
+
+	case "Mutation.deleteChoice":
+		if e.complexity.Mutation.DeleteChoice == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_deleteChoice_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.DeleteChoice(childComplexity, args["input"].(int)), true
+
+	case "Mutation.deleteQuestion":
+		if e.complexity.Mutation.DeleteQuestion == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_deleteQuestion_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.DeleteQuestion(childComplexity, args["input"].(int)), true
+
+	case "Mutation.updateChoice":
+		if e.complexity.Mutation.UpdateChoice == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_updateChoice_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.UpdateChoice(childComplexity, args["input"].(model.ChoiceUpdateInput)), true
+
+	case "Mutation.updateQuestion":
+		if e.complexity.Mutation.UpdateQuestion == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_updateQuestion_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.UpdateQuestion(childComplexity, args["input"].(model.QuestionUpdateInput)), true
 
 	case "Query.choices":
 		if e.complexity.Query.Choices == nil {
@@ -274,14 +330,31 @@ input QuestionInput {
   pub_date: String!
 }
 
+input QuestionUpdateInput {
+  id: ID!
+  question_text: String!
+  pub_date: String!
+}
+
 input ChoiceInput {
   question_id: ID!
   choice_text: String!
 }
 
+input ChoiceUpdateInput {
+  id: ID!
+  question_id: ID!
+  choice_text: String!
+}
+
+
 type Mutation {
   createQuestion(input: QuestionInput!): Question!
+  updateQuestion(input: QuestionUpdateInput!): Question!
+  deleteQuestion(input: ID!): String!
   createChoice(input: ChoiceInput): Choice!
+  updateChoice(input: ChoiceUpdateInput!): Choice!
+  deleteChoice(input: ID!): String!
 }`, BuiltIn: false},
 }
 var parsedSchema = gqlparser.MustLoadSchema(sources...)
@@ -312,6 +385,66 @@ func (ec *executionContext) field_Mutation_createQuestion_args(ctx context.Conte
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
 		arg0, err = ec.unmarshalNQuestionInput2githubᚗcomᚋamaraadᚋgoappᚋgraphᚋmodelᚐQuestionInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_deleteChoice_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 int
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalNID2int(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_deleteQuestion_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 int
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalNID2int(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_updateChoice_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 model.ChoiceUpdateInput
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalNChoiceUpdateInput2githubᚗcomᚋamaraadᚋgoappᚋgraphᚋmodelᚐChoiceUpdateInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_updateQuestion_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 model.QuestionUpdateInput
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalNQuestionUpdateInput2githubᚗcomᚋamaraadᚋgoappᚋgraphᚋmodelᚐQuestionUpdateInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -555,6 +688,90 @@ func (ec *executionContext) _Mutation_createQuestion(ctx context.Context, field 
 	return ec.marshalNQuestion2ᚖgithubᚗcomᚋamaraadᚋgoappᚋgraphᚋmodelᚐQuestion(ctx, field.Selections, res)
 }
 
+func (ec *executionContext) _Mutation_updateQuestion(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_updateQuestion_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().UpdateQuestion(rctx, args["input"].(model.QuestionUpdateInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*model.Question)
+	fc.Result = res
+	return ec.marshalNQuestion2ᚖgithubᚗcomᚋamaraadᚋgoappᚋgraphᚋmodelᚐQuestion(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_deleteQuestion(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_deleteQuestion_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().DeleteQuestion(rctx, args["input"].(int))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
 func (ec *executionContext) _Mutation_createChoice(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -595,6 +812,90 @@ func (ec *executionContext) _Mutation_createChoice(ctx context.Context, field gr
 	res := resTmp.(*model.Choice)
 	fc.Result = res
 	return ec.marshalNChoice2ᚖgithubᚗcomᚋamaraadᚋgoappᚋgraphᚋmodelᚐChoice(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_updateChoice(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_updateChoice_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().UpdateChoice(rctx, args["input"].(model.ChoiceUpdateInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*model.Choice)
+	fc.Result = res
+	return ec.marshalNChoice2ᚖgithubᚗcomᚋamaraadᚋgoappᚋgraphᚋmodelᚐChoice(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_deleteChoice(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_deleteChoice_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().DeleteChoice(rctx, args["input"].(int))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Query_questions(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -2028,6 +2329,45 @@ func (ec *executionContext) unmarshalInputChoiceInput(ctx context.Context, obj i
 	return it, nil
 }
 
+func (ec *executionContext) unmarshalInputChoiceUpdateInput(ctx context.Context, obj interface{}) (model.ChoiceUpdateInput, error) {
+	var it model.ChoiceUpdateInput
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	for k, v := range asMap {
+		switch k {
+		case "id":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+			it.ID, err = ec.unmarshalNID2int(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "question_id":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("question_id"))
+			it.QuestionID, err = ec.unmarshalNID2int(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "choice_text":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("choice_text"))
+			it.ChoiceText, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
 func (ec *executionContext) unmarshalInputQuestionInput(ctx context.Context, obj interface{}) (model.QuestionInput, error) {
 	var it model.QuestionInput
 	asMap := map[string]interface{}{}
@@ -2037,6 +2377,45 @@ func (ec *executionContext) unmarshalInputQuestionInput(ctx context.Context, obj
 
 	for k, v := range asMap {
 		switch k {
+		case "question_text":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("question_text"))
+			it.QuestionText, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "pub_date":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("pub_date"))
+			it.PubDate, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputQuestionUpdateInput(ctx context.Context, obj interface{}) (model.QuestionUpdateInput, error) {
+	var it model.QuestionUpdateInput
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	for k, v := range asMap {
+		switch k {
+		case "id":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+			it.ID, err = ec.unmarshalNID2int(ctx, v)
+			if err != nil {
+				return it, err
+			}
 		case "question_text":
 			var err error
 
@@ -2129,8 +2508,28 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
+		case "updateQuestion":
+			out.Values[i] = ec._Mutation_updateQuestion(ctx, field)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "deleteQuestion":
+			out.Values[i] = ec._Mutation_deleteQuestion(ctx, field)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
 		case "createChoice":
 			out.Values[i] = ec._Mutation_createChoice(ctx, field)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "updateChoice":
+			out.Values[i] = ec._Mutation_updateChoice(ctx, field)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "deleteChoice":
+			out.Values[i] = ec._Mutation_deleteChoice(ctx, field)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
@@ -2559,6 +2958,11 @@ func (ec *executionContext) marshalNChoice2ᚖgithubᚗcomᚋamaraadᚋgoappᚋg
 	return ec._Choice(ctx, sel, v)
 }
 
+func (ec *executionContext) unmarshalNChoiceUpdateInput2githubᚗcomᚋamaraadᚋgoappᚋgraphᚋmodelᚐChoiceUpdateInput(ctx context.Context, v interface{}) (model.ChoiceUpdateInput, error) {
+	res, err := ec.unmarshalInputChoiceUpdateInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
 func (ec *executionContext) unmarshalNID2int(ctx context.Context, v interface{}) (int, error) {
 	res, err := graphql.UnmarshalIntID(v)
 	return res, graphql.ErrorOnPath(ctx, err)
@@ -2628,6 +3032,11 @@ func (ec *executionContext) marshalNQuestion2ᚖgithubᚗcomᚋamaraadᚋgoapp�
 
 func (ec *executionContext) unmarshalNQuestionInput2githubᚗcomᚋamaraadᚋgoappᚋgraphᚋmodelᚐQuestionInput(ctx context.Context, v interface{}) (model.QuestionInput, error) {
 	res, err := ec.unmarshalInputQuestionInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalNQuestionUpdateInput2githubᚗcomᚋamaraadᚋgoappᚋgraphᚋmodelᚐQuestionUpdateInput(ctx context.Context, v interface{}) (model.QuestionUpdateInput, error) {
+	res, err := ec.unmarshalInputQuestionUpdateInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 

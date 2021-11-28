@@ -14,6 +14,12 @@ type ChoiceInput struct {
 	ChoiceText string `json:"choice_text"`
 }
 
+type ChoiceUpdateInput struct {
+	ID         int    `json:"id"`
+	QuestionID int    `json:"question_id"`
+	ChoiceText string `json:"choice_text"`
+}
+
 type Question struct {
 	ID           int       `json:"id"`
 	QuestionText string    `json:"question_text"`
@@ -22,6 +28,12 @@ type Question struct {
 }
 
 type QuestionInput struct {
+	QuestionText string `json:"question_text"`
+	PubDate      string `json:"pub_date"`
+}
+
+type QuestionUpdateInput struct {
+	ID           int    `json:"id"`
 	QuestionText string `json:"question_text"`
 	PubDate      string `json:"pub_date"`
 }

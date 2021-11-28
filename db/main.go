@@ -2,10 +2,10 @@ package database
 
 import (
 	"fmt"
-	"gorm.io/driver/postgres"
-	"github.com/amaraad/goapp/graph/model"
+
+	"github.com/amaraad/goapp/helpers"
 	_ "github.com/jinzhu/gorm/dialects/postgres"
-	_ "gorm.io/driver/postgres"
+	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
 
@@ -15,7 +15,7 @@ type dbConfig struct {
 	user     string
 	dbname   string
 	password string
-	sslmode string
+	sslmode  string
 }
 
 var config = dbConfig{"localhost", 5432, "postgres", "goapp_db", "postgres", "disable"}
@@ -26,12 +26,16 @@ func getDatabaseUrl() string {
 		config.host, config.port, config.user, config.dbname, config.password, config.sslmode)
 }
 
-func GetDatabase() (*gorm.DB, error) {
-	db, err := gorm.Open(postgres.Open(getDatabaseUrl()), &gorm.Config{})
-	return db, err
-}
+var DB *gorm.DB
 
-func RunMigrations(db *gorm.DB) {
-	db.AutoMigrate(&model.Choice{})
-	db.AutoMigrate(&model.Question{})
+func InitDatabase() {
+	database, err := gorm.Open(postgres.New(postgres.Config{
+		DSN:                  getDatabaseUrl(),
+		PreferSimpleProtocol: false,
+	}), &gorm.Config{})
+	helpers.HandleErr(err)
+	// database.DB().SetMaxIdleConns(10)
+	// database.DB().SetMaxOpenConns(100)
+	DB = database
+
 }

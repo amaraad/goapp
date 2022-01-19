@@ -6,6 +6,7 @@ import (
 	database "github.com/amaraad/goapp/db"
 	"github.com/amaraad/goapp/graph"
 	"github.com/amaraad/goapp/graph/generated"
+	"github.com/amaraad/goapp/migrations"
 	"github.com/gin-gonic/gin"
 )
 
@@ -24,7 +25,7 @@ func graphqlHandler() gin.HandlerFunc {
 
 // Defining the Playground handler
 func playgroundHandler() gin.HandlerFunc {
-	h := playground.Handler("GraphQL", "/query")
+	h := playground.Handler("GraphQL", "/graphql/query")
 
 	return func(c *gin.Context) {
 		h.ServeHTTP(c.Writer, c.Request)
@@ -33,8 +34,13 @@ func playgroundHandler() gin.HandlerFunc {
 
 func main() {
 	database.InitDatabase()
+	migrations.Migrate()
 	r := gin.Default()
-	r.POST("/query", graphqlHandler())
-	r.GET("/", playgroundHandler())
+	// graphql example
+	r.POST("/graphql/query", graphqlHandler())
+	r.GET("/graphql/", playgroundHandler())
+	// rest example
+	//r.GET("/rest/request", rest.getRequest())
+	//r.GET("/rest/request", rest.postRequest())
 	r.Run(defaultPort)
 }

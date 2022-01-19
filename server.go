@@ -40,7 +40,7 @@ func main() {
 	r.POST("/graphql/query", graphqlHandler())
 	r.GET("/graphql/", playgroundHandler())
 	// rest example
-	//r.GET("/rest/request", rest.getRequest())
-	//r.GET("/rest/request", rest.postRequest())
+	r.GET("/rest/request", rest.getRequest)
+	r.GET("/rest/request", rest.postRequest)
 	r.Run(defaultPort)
 }

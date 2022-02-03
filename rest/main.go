@@ -7,12 +7,12 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func getRequest(c *gin.Context) {
+func GetRequest(c *gin.Context) {
 	question := model.Question{}
 	c.IndentedJSON(http.StatusOK, question)
 }
 
-func postRequest(c *gin.Context) {
+func PostRequest(c *gin.Context) {
 	question := model.Question{}
 	c.IndentedJSON(http.StatusCreated, question)
 }

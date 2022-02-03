@@ -7,6 +7,7 @@ import (
 	"github.com/amaraad/goapp/graph"
 	"github.com/amaraad/goapp/graph/generated"
 	"github.com/amaraad/goapp/migrations"
+	rest "github.com/amaraad/goapp/rest"
 	"github.com/gin-gonic/gin"
 )
 
@@ -40,7 +41,7 @@ func main() {
 	r.POST("/graphql/query", graphqlHandler())
 	r.GET("/graphql/", playgroundHandler())
 	// rest example
-	r.GET("/rest/request", rest.getRequest)
-	r.GET("/rest/request", rest.postRequest)
+	r.GET("/rest/request/get", rest.GetRequest)
+	r.GET("/rest/request/post", rest.PostRequest)
 	r.Run(defaultPort)
 }
